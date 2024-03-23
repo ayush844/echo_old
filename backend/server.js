@@ -1,3 +1,4 @@
+import path from "path"
 import express from 'express'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
@@ -13,6 +14,8 @@ dotenv.config();
 app.use(express.json()); // to parse the incoming requests with JSON payload (from req.body)
 app.use(cookieParser());
 
+const __dirname = path.resolve();
+
 const PORT = process.env.PORT || 9000;
 
 app.use('/api/auth', authRoutes);
@@ -20,6 +23,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/message', messageRoutes);
 
 app.use('/api/user', userRoutes);
+
+app.use(express.static(path.join(__dirname, '/frontend/dist')));
+
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+});
 
 server.listen(PORT, ()=>{
     connectToMongoDB();
